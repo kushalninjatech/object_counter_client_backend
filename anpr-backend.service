@@ -1,0 +1,18 @@
+[Unit]
+Description=ANPR Client Backend Service
+After=network.target docker.service
+Requires=docker.service
+
+[Service]
+Type=forking
+User=user
+Group=user
+WorkingDirectory=/home/user/Documents/Projects/anpr_client_v2_fe_be/anpr_client_backend
+ExecStart=/bin/bash -c 'source .venv/bin/activate && ./start.sh -d'
+ExecStop=/home/user/Documents/Projects/anpr_client_v2_fe_be/anpr_client_backend/stop.sh
+RemainAfterExit=yes
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

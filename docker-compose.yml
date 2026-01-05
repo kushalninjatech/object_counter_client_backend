@@ -1,0 +1,53 @@
+# Docker Compose - PostgreSQL and Redis only
+# FastAPI and Celery run locally with uv for local RTSP access
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:16-alpine
+    container_name: anpr_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: anpr_client_db
+      POSTGRES_USER: anpr_user
+      POSTGRES_PASSWORD: anpr_password
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data
+    ports:
+      - "6655:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U anpr_user -d anpr_client_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - anpr_network
+
+  # Redis (Celery Broker & Result Backend)
+  redis:
+    image: redis:7-alpine
+    container_name: anpr_redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    volumes:
+      - ./redis_data:/data
+    ports:
+      - "6399:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - anpr_network
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  anpr_network:
+    driver: bridge

@@ -1,0 +1,43 @@
+# FastAPI and Web Server
+fastapi==0.115.5
+uvicorn[standard]==0.34.0
+python-multipart==0.0.9
+
+# Pydantic
+pydantic==2.10.3
+pydantic-settings==2.6.1
+
+# Database
+sqlalchemy==2.0.36
+psycopg2-binary==2.9.10
+alembic==1.14.0
+
+# Redis & Celery
+redis==5.2.1
+celery==5.4.0
+flower==2.0.1
+
+# Computer Vision - Order matters! numpy → opencv → ultralytics → lap
+numpy==1.26.4
+opencv-python==4.10.0.84
+ultralytics==8.3.240
+# lap installed after ultralytics via: uv pip install lap
+
+# HTTP Client
+httpx==0.28.1
+
+# Environment Variables
+python-dotenv==1.0.1
+
+# Utilities
+python-dateutil==2.9.0
+openpyxl==3.1.2
+
+# Development (optional)
+pytest==8.3.3
+pytest-asyncio==0.24.0
+black==24.10.0
+flake8==7.1.1
+mypy==1.13.0
+
+lap
