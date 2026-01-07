@@ -36,15 +36,15 @@ class Settings(BaseSettings):
 
     # Central Server
     CENTRAL_SERVER_URL: str = "https://flowershow.kushaldulani.xyz/api/v1/anpr/upload"
-    CENTRAL_SERVER_API_KEY: str = "1e738c59d00699b4953f8e82c0a29838a18ce0d42647c532c8cc2452c5c759fd"
+    CENTRAL_SERVER_API_KEY: str = "75719952247bc229de2fc6785950ce9592fa5028e911668ccdc672306ebe0c75"
     CENTRAL_SERVER_TIMEOUT: int = 30
     CENTRAL_SERVER_ENABLED: bool = True  # Set to False to disable uploads
 
     # Organization
-    ORGANIZATION_ID: int = 1
+    ORGANIZATION_ID: int = 3
 
     # YOLO Model
-    MODEL_PATH: str = "yolov8l.pt"
+    MODEL_PATH: str = "yolov8n.pt"
 
     # Detection Classes (COCO dataset)
     # 0: person, 2: car, 3: motorcycle, 5: bus, 7: truck
@@ -72,6 +72,7 @@ class Settings(BaseSettings):
     DETECTIONS_DIR: Path = BASE_DIR / "detections"
 
     # RTSP Settings
+    RTSP_TRANSPORT: str = "udp"  # Options: "udp" (faster, less reliable) or "tcp" (slower, more reliable)
     TARGET_FPS: int = 30
     CONFIDENCE: float = 0.5
     ZONE_PROXIMITY: int = 100

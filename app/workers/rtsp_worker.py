@@ -64,6 +64,7 @@ class RTSPWorker:
         fps: int,
         conf: float,
         org_id: int,
+        detection_types: list = None,
         stream_type: StreamType = StreamType.DOWNSIDE_UP,
         show_window: bool = False
     ):
@@ -79,6 +80,7 @@ class RTSPWorker:
             fps: Target FPS
             conf: Confidence threshold
             org_id: Organization ID
+            detection_types: List of YOLO class IDs to detect (e.g., [0] for person, [2,3] for car/motorcycle)
             stream_type: Camera stream orientation (upside-down or downside-up)
             show_window: Whether to show detection window for debugging
         """
@@ -90,6 +92,7 @@ class RTSPWorker:
         self.fps = fps
         self.conf = conf
         self.org_id = org_id
+        self.detection_types = detection_types
         self.stream_type = stream_type
         self.show_window = show_window
 
@@ -112,7 +115,7 @@ class RTSPWorker:
             roi_polygon=self.roi,
             detection_line=self.line,
             confidence=self.conf,
-            vehicle_classes=settings.detection_classes,
+            vehicle_classes=self.detection_types if self.detection_types else settings.detection_classes,
             output_dir=str(settings.DETECTIONS_DIR),
             camera_name=self.camera_name,
             stream_type=self.stream_type,
@@ -120,8 +123,8 @@ class RTSPWorker:
             window_name=f"Camera {self.camera_id} - {self.camera_name}"
         )
 
-        # Configure OpenCV to use UDP for RTSP (better for real-time)
-        os.environ['OPENCV_FFMPEG_CAPTURE_OPTIONS'] = 'rtsp_transport;udp'
+        # Configure RTSP transport from settings (udp=faster/less reliable, tcp=slower/more reliable)
+        os.environ['OPENCV_FFMPEG_CAPTURE_OPTIONS'] = f'rtsp_transport;{settings.RTSP_TRANSPORT}'
 
         # Open video stream
         self.cap = cv2.VideoCapture(self.stream_url, cv2.CAP_FFMPEG)
@@ -142,7 +145,7 @@ class RTSPWorker:
         consecutive_failures = 0
         max_consecutive_failures = 30
 
-        print(f"[{self.camera_name}] Worker started (UDP transport, target FPS: {self.fps})")
+        print(f"[{self.camera_name}] Worker started ({settings.RTSP_TRANSPORT.upper()} transport, target FPS: {self.fps})")
 
         while self.running:
             ret, frame = self.cap.read()
@@ -161,7 +164,7 @@ class RTSPWorker:
                     print(f"[{self.camera_name}] Reconnecting...")
                     self.cap.release()
 
-                    os.environ['OPENCV_FFMPEG_CAPTURE_OPTIONS'] = 'rtsp_transport;udp'
+                    os.environ['OPENCV_FFMPEG_CAPTURE_OPTIONS'] = f'rtsp_transport;{settings.RTSP_TRANSPORT}'
                     self.cap = cv2.VideoCapture(self.stream_url, cv2.CAP_FFMPEG)
                     self.cap.set(cv2.CAP_PROP_BUFFERSIZE, 1)
                     self.cap.set(cv2.CAP_PROP_OPEN_TIMEOUT_MSEC, 10000)

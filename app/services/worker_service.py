@@ -179,6 +179,7 @@ class WorkerService:
             fps=camera.target_fps,
             conf=camera.confidence,
             org_id=camera.organization_id,
+            detection_types=camera.detection_types,
             stream_type=camera.stream_type,
             show_window=show_window
         )
